@@ -1945,7 +1945,7 @@ static bool ParseStringProperty(
   }
 
   if (ret) {
-    (*ret) = it.value();
+    (*ret) = it.value().get_ref<const std::string&>();
   }
 
   return true;
