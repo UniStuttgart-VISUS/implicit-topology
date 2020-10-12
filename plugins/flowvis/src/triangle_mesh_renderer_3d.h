@@ -114,6 +114,9 @@ namespace megamol
             /** Parameter slot for setting the default color if no dataset is specified */
             core::param::ParamSlot default_color;
 
+            /** Parameter slot to render every time step instead of caching */
+            core::param::ParamSlot keep_rendering;
+
             /** Bounding box */
             vislib::math::Cuboid<float> bounding_box;
 

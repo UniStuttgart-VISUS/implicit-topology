@@ -11,6 +11,7 @@
 
 #include "mmcore/BoundingBoxes_2.h"
 #include "mmcore/Call.h"
+#include "mmcore/param/BoolParam.h"
 #include "mmcore/param/ColorParam.h"
 #include "mmcore/param/FlexEnumParam.h"
 #include "mmcore/param/TransferFunctionParam.h"
@@ -37,6 +38,7 @@ triangle_mesh_renderer_3d::triangle_mesh_renderer_3d()
     , clip_plane_slot("clip_plane", "Clip plane for clipping the rendered triangle mesh")
     , data_set("data_set", "Data set used for coloring the triangles")
     , default_color("default_color", "Default color if no dataset is specified")
+    , keep_rendering("keep_rendering", "Render every frame instead of caching (needed to adjust normals to camera)")
     , triangle_mesh_hash(-1)
     , triangle_mesh_changed(false)
     , mesh_data_hash(-1)
@@ -58,6 +60,9 @@ triangle_mesh_renderer_3d::triangle_mesh_renderer_3d()
 
     this->default_color << new core::param::ColorParam(0.7f, 0.7f, 0.7f, 1.0f);
     this->MakeSlotAvailable(&this->default_color);
+
+    this->keep_rendering << new core::param::BoolParam(false);
+    this->MakeSlotAvailable(&this->keep_rendering);
 
     // Disconnect inherited slots
     this->SetSlotUnavailable(&this->m_renderTask_rhs_slot);
@@ -231,7 +236,7 @@ bool triangle_mesh_renderer_3d::getDataCallback(core::Call& call) {
         rt_collection = grtc.getData();
     }
 
-    if (this->triangle_mesh_changed || this->mesh_data_changed) {
+    if (this->keep_rendering.Param<core::param::BoolParam>()->Value() || this->triangle_mesh_changed || this->mesh_data_changed) {
         // Create mesh
         this->render_data.mesh = std::make_shared<mesh::GPUMeshCollection>();
 
