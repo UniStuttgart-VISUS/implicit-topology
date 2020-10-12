@@ -2,6 +2,7 @@
 #include "LocalLighting.h"
 
 #include "mmcore/CoreInstance.h"
+#include "mmcore/param/FloatParam.h"
 
 #include "vislib/graphics/gl/ShaderSource.h"
 
@@ -12,6 +13,9 @@ megamol::compositing::LocalLighting::LocalLighting()
     , m_output_texture(nullptr)
     , m_point_lights_buffer(nullptr)
     , m_distant_lights_buffer(nullptr)
+    , m_diffuse("m_diffuse", "Diffuse part for Blinn-Phong lighting")
+    , m_specular("m_specular", "Specular part for Blinn-Phong lighting")
+    , m_shininess("m_shininess", "Shininess for specular lighting")
     , m_output_tex_slot("OutputTexture", "Gives access to resulting output texture")
     , m_albedo_tex_slot("AlbedoTexture", "Connect to the albedo render target texture")
     , m_normal_tex_slot("NormalTexture", "Connects to the normals render target texture")
@@ -20,6 +24,15 @@ megamol::compositing::LocalLighting::LocalLighting()
     , m_lightSlot("lights", "Lights are retrieved over this slot. If no light is connected, a default camera light is used") 
     , m_camera_slot("Camera", "Connects a (copy of) camera state")
 {
+    this->m_diffuse << new core::param::FloatParam(0.7f, 0.0f, 1.0f);
+    this->MakeSlotAvailable(&this->m_diffuse);
+
+    this->m_specular << new core::param::FloatParam(0.3f, 0.0f, 1.0f);
+    this->MakeSlotAvailable(&this->m_specular);
+
+    this->m_shininess << new core::param::FloatParam(16.0f, 0.0f);
+    this->MakeSlotAvailable(&this->m_shininess);
+
     this->m_output_tex_slot.SetCallback(CallTexture2D::ClassName(), "GetData", &LocalLighting::getDataCallback);
     this->m_output_tex_slot.SetCallback(CallTexture2D::ClassName(), "GetMetaData", &LocalLighting::getMetaDataCallback);
     this->MakeSlotAvailable(&this->m_output_tex_slot);
@@ -161,6 +174,13 @@ bool megamol::compositing::LocalLighting::getDataCallback(core::Call& caller) {
         m_distant_lights_buffer->bind(2);
         glUniform1i(
             m_lighting_prgm->ParameterLocation("distant_light_cnt"), static_cast<GLint>(m_distant_lights.size()));
+
+        glUniform1f(
+            m_lighting_prgm->ParameterLocation("k_diffuse"), this->m_diffuse.Param<core::param::FloatParam>()->Value());
+        glUniform1f(m_lighting_prgm->ParameterLocation("k_specular"),
+            this->m_specular.Param<core::param::FloatParam>()->Value());
+        glUniform1f(m_lighting_prgm->ParameterLocation("shininess"),
+            this->m_shininess.Param<core::param::FloatParam>()->Value());
 
         glActiveTexture(GL_TEXTURE0);
         albedo_tx2D->bindTexture();

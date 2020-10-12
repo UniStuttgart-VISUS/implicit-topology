@@ -11,6 +11,7 @@
 #include "compositing/compositing_gl.h"
 #include "mmcore/CalleeSlot.h"
 #include "mmcore/CallerSlot.h"
+#include "mmcore/param/ParamSlot.h"
 #include "mmcore/view/CallRender3D_2.h"
 #include "mmcore/view/Renderer3DModule_2.h"
 
@@ -107,6 +108,15 @@ private:
 
 
     //TODO mode slot for LAMBERT, PHONG, etc.
+
+    /** Slot for setting diffuse part of Blinn-Phong */
+    megamol::core::param::ParamSlot m_diffuse;
+
+    /** Slot for setting specular part of Blinn-Phong */
+    megamol::core::param::ParamSlot m_specular;
+
+    /** Slot for setting specular shininess of Blinn-Phong */
+    megamol::core::param::ParamSlot m_shininess;
 
     /** Slot for requesting the output textures from this module, i.e. lhs connection */
     megamol::core::CalleeSlot m_output_tex_slot;

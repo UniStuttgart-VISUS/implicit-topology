@@ -1,6 +1,5 @@
-struct LightParams
-{
-    float x,y,z,intensity;
+struct LightParams {
+    float x, y, z, intensity;
 };
 
 layout(std430, binding = 1) readonly buffer PointLightParamsBuffer { LightParams point_light_params[]; };
@@ -15,6 +14,10 @@ layout(RGBA16) writeonly uniform image2D tgt_tx2D;
 uniform int point_light_cnt;
 uniform int distant_light_cnt;
 
+uniform float k_diffuse;
+uniform float k_specular;
+uniform float shininess;
+
 uniform mat4 inv_view_mx;
 uniform mat4 inv_proj_mx;
 
@@ -27,15 +30,19 @@ vec3 depthToWorldPos(float depth, vec2 uv) {
 
     // Perspective division
     vs_pos /= vs_pos.w;
-    
+
     vec4 ws_pos = inv_view_mx * vs_pos;
 
     return ws_pos.xyz;
 }
 
-float lambert(vec3 normal, vec3 light_dir)
-{
-    return clamp(dot(normal,light_dir),0.0,1.0);
+float lambert(vec3 light_dir, vec3 normal) { return clamp(dot(normal, light_dir), 0.0, 1.0); }
+
+float specular(vec3 light_dir, vec3 normal) {
+    vec3 halfDir = normalize(light_dir + vec3(0.0, 0.0, 1.0));
+    float specAngle = max(dot(halfDir, normal), 0.0);
+
+    return pow(specAngle, shininess);
 }
 
 
@@ -44,7 +51,7 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 void main() {
     uvec3 gID = gl_GlobalInvocationID.xyz;
     ivec2 pixel_coords = ivec2(gID.xy);
-    ivec2 tgt_resolution = imageSize (tgt_tx2D);
+    ivec2 tgt_resolution = imageSize(tgt_tx2D);
 
     if (pixel_coords.x >= tgt_resolution.x || pixel_coords.y >= tgt_resolution.y) {
         return;
@@ -52,33 +59,35 @@ void main() {
 
     vec2 pixel_coords_norm = (vec2(pixel_coords) + vec2(0.5)) / vec2(tgt_resolution);
 
-    vec4 albedo = texture(albedo_tx2D,pixel_coords_norm);
-    vec3 normal = texture(normal_tx2D,pixel_coords_norm).rgb;
-    float depth = texture(depth_tx2D,pixel_coords_norm).r;
+    vec4 albedo = texture(albedo_tx2D, pixel_coords_norm);
+    vec3 normal = texture(normal_tx2D, pixel_coords_norm).rgb;
+    float depth = texture(depth_tx2D, pixel_coords_norm).r;
 
     vec4 retval = albedo;
 
-    if (depth > 0.0f && depth < 1.0f)
-    {
-        vec3 world_pos = depthToWorldPos(depth,pixel_coords_norm);
+    if (depth > 0.0f && depth < 1.0f) {
+        vec3 world_pos = depthToWorldPos(depth, pixel_coords_norm);
 
         float reflected_light = 0.0;
-        for(int i=0; i<point_light_cnt; ++i)
-        {
-            vec3 light_dir = vec3(point_light_params[i].x,point_light_params[i].y,point_light_params[i].z) - world_pos;
+        float specular_light = 0.0;
+        for (int i = 0; i < point_light_cnt; ++i) {
+            vec3 light_dir =
+                vec3(point_light_params[i].x, point_light_params[i].y, point_light_params[i].z) - world_pos;
             float d = length(light_dir);
             light_dir = normalize(light_dir);
-            reflected_light += lambert(light_dir,normal) * point_light_params[i].intensity * (1.0/(d*d));
+            reflected_light +=
+                k_diffuse * lambert(light_dir, normal) * point_light_params[i].intensity * (1.0 / (d * d));
+            specular_light +=
+                k_specular * specular(light_dir, normal) * point_light_params[i].intensity * (1.0 / (d * d));
         }
 
-        for(int i=0; i<distant_light_cnt; ++i)
-        {
-            vec3 light_dir = vec3(distant_light_params[i].x,distant_light_params[i].y,distant_light_params[i].z);
-            reflected_light += lambert(light_dir,normal) * distant_light_params[i].intensity;
+        for (int i = 0; i < distant_light_cnt; ++i) {
+            vec3 light_dir = vec3(distant_light_params[i].x, distant_light_params[i].y, distant_light_params[i].z);
+            reflected_light += lambert(light_dir, normal) * distant_light_params[i].intensity;
         }
 
-        retval.rgb = vec3(reflected_light) * albedo.rgb;
+        retval.rgb = vec3(reflected_light) * albedo.rgb + specular_light * albedo.rgb;
     }
 
-    imageStore(tgt_tx2D, pixel_coords , retval );
+    imageStore(tgt_tx2D, pixel_coords, retval);
 }
