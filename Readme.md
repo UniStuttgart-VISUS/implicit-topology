@@ -1,7 +1,5 @@
 
-![](logo.png)  
-[![Build Status Travis](https://travis-ci.com/UniStuttgart-VISUS/megamol.svg?branch=master)](https://travis-ci.com/UniStuttgart-VISUS/megamol)
-[![Build status](https://ci.appveyor.com/api/projects/status/jrtnh313libyy3vj/branch/master?svg=true)](https://ci.appveyor.com/project/megamolservice/megamol/branch/master)
+![](logo.png)
 
 
 MegaMol is a visualization middleware used to visualize point-based molecular data sets. This software is developed within the ​Collaborative Research Center 716, subproject ​D.3 at the ​[Visualization Research Center (VISUS)](https://www.visus.uni-stuttgart.de/en) of the University of Stuttgart and at the ​Computer Graphics and Visualization Group of the TU Dresden.  
@@ -14,6 +12,7 @@ MegaMol succeeds ​MolCloud, which has been developed at the University of Stut
 1. Clone the MegaMol repository
 2. Create a build folder
 3. Invoke `cmake` inside the build folder
+    1. Set the `cmake` variable `BUILD_FLOWVIS_PLUGIN` to `ON`
 4. Execute `make` to build MegaMol
 5. Run `make install` to create your MegaMol installation
 6. Test Megamol with
@@ -23,7 +22,8 @@ MegaMol succeeds ​MolCloud, which has been developed at the University of Stut
 ### Windows
 1. Clone the MegaMol repository
 2. Use the cmake GUI to configure MegaMol
-    1. The configuration creates a `sln` file inside the build folder
+    1. Make sure to enable the *flowvis* plugin by checking `BUILD_FLOWVIS_PLUGIN`
+    2. The configuration creates an `sln` file inside the build folder
 3. Open the `sln` file with *Visual Studio*
 4. Use the `ALL_BUILD` target to build MegaMol
 5. Use the `INSTALL` target to create your MegaMol installation
@@ -37,21 +37,34 @@ MegaMol offers a configurator GUI (C#) that runs with .Net Framework 4.
 It runs also on Linux with Mono 3.2.8 (except for the analysis function and indirect-start functions).  
 
 
-## How to use MegaMol
-For a detailed description have a look at the [manual](docs/manual.md).
+## Implicit Topology Computation and Visualization
+The files necessary to reproduce the results from our paper
 
 
-## Using the plugin template
-1. Copy the template folder
-2. Rename the copied folder to the intended plugin name
-3. Execute the instawiz.pl script inside the new folder
-    1. The script detects the plugin name
-    2. Autogenerate the GUID
-4. Remove instawiz.pl
-5. Add libraries/dependencies to `CMakeLists.txt` (optional)
-6. Implement the content of your plugin
-7. Write a `Readme.md` for your plugin (mandatory)
-8. Add the folder to your local git
+**Implicit Visualization of 2D Vector Field Topology for Periodic Orbit Detection**  
+Alexander Straub, Grzegorz K. Karch, Filip Sadlo, Thomas Ertl  
+Proceedings of TopoInVis, 2019
+
+    @InProceedings{straub2019implicit,
+        author    = {Straub, Alexander
+            and Karch, Grzegorz K.
+            and Sadlo, Filip
+            and Ertl, Thomas},
+        booktitle = {Proceedings of TopoInVis},
+        title     = {Implicit Visualization of {2D} Vector Field Topology for Periodic Orbit Detection},
+        year      = {2019}
+    }
+
+
+are located in the `projects` folder in the source directory of MegaMol. To run the project in MegaMol, run one of the following commands from within the `projects` folder:
+
+
+    path/to/mmconsole -p "topoinvis_buoyant_I.mmprj" -i TopoInVis_(Buoyant_I) inst
+    path/to/mmconsole -p "topoinvis_buoyant_II.mmprj" -i TopoInVis_(Buoyant_II) inst
+    path/to/mmconsole -p "theisel.mmprj" -i Theisel3D inst
+
+
+Using the GUI, you can modify the parameters, run the computations, and visualize the results.
 
 
 ## Citing MegaMol
