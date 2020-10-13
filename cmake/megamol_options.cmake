@@ -38,7 +38,7 @@ option(MEGAMOL_INSTALL_DEPENDENCIES "MegaMol dependencies in install" ON)
 mark_as_advanced(MEGAMOL_INSTALL_DEPENDENCIES)
 
 # CUDA
-option(ENABLE_CUDA "Enable CUDA, which is needed for certain plugins" OFF)
+option(ENABLE_CUDA "Enable CUDA, which is needed for certain plugins" ON)
 if(ENABLE_CUDA)
   enable_language(CUDA)
 endif()

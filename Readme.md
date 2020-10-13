@@ -12,7 +12,6 @@ MegaMol succeeds ​MolCloud, which has been developed at the University of Stut
 1. Clone the MegaMol repository
 2. Create a build folder
 3. Invoke `cmake` inside the build folder
-    1. Set the `cmake` variable `BUILD_FLOWVIS_PLUGIN` to `ON`
 4. Execute `make` to build MegaMol
 5. Run `make install` to create your MegaMol installation
 6. Test Megamol with
@@ -22,9 +21,7 @@ MegaMol succeeds ​MolCloud, which has been developed at the University of Stut
 ### Windows
 1. Clone the MegaMol repository
 2. Use the cmake GUI to configure MegaMol
-    1. Make sure to enable the *flowvis* plugin by checking `BUILD_FLOWVIS_PLUGIN`
-    2. The configuration creates an `sln` file inside the build folder
-3. Open the `sln` file with *Visual Studio*
+3. Open the generated `sln` file with *Visual Studio*
 4. Use the `ALL_BUILD` target to build MegaMol
 5. Use the `INSTALL` target to create your MegaMol installation
 6. Test Megamol with
