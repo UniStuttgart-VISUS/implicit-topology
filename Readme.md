@@ -64,7 +64,7 @@ are located in the `projects` folder in the source directory of MegaMol. To run 
     path/to/mmconsole -p "theisel.mmprj" -i Theisel3D inst
 
 
-Using the GUI, you can modify the parameters, run the computations, and visualize the results.
+Using the GUI, you can modify the parameters, run the computations, and visualize the results. To just load the results provided in the data folder, expand `::inst::implicit_topology1` in the GUI, press the `load_computation` button, and follow up by starting the computation by clicking on `start_computation`.
 
 
 ## Citing MegaMol
