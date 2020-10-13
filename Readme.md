@@ -42,14 +42,11 @@ The files necessary to reproduce the results from our paper
 
 
 **Implicit Visualization of 2D Vector Field Topology for Periodic Orbit Detection**  
-Alexander Straub, Grzegorz K. Karch, Filip Sadlo, Thomas Ertl  
+A. Straub, G. K. Karch, F. Sadlo, T. Ertl  
 Proceedings of TopoInVis, 2019
 
     @InProceedings{straub2019implicit,
-        author    = {Straub, Alexander
-            and Karch, Grzegorz K.
-            and Sadlo, Filip
-            and Ertl, Thomas},
+        author    = {Straub, Alexander and Karch, Grzegorz K. and Sadlo, Filip and Ertl, Thomas},
         booktitle = {Proceedings of TopoInVis},
         title     = {Implicit Visualization of {2D} Vector Field Topology for Periodic Orbit Detection},
         year      = {2019}
